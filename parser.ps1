@@ -2,8 +2,9 @@ param(
   [string]$infile
 )
 
+# remove all chars before the first space
 function rm_to_space($in){
-  $pos = $in.IndexOf(' ')
+  $pos = $in.IndexOf(' ')+1
   return $in.SubString($pos)
 }
 
@@ -34,14 +35,10 @@ Write-Host
 
 $line_nr = 1
 while($null -ne ($line = $reader.ReadLine())) {
-    #echo $line_nr
     if($line.length -ne 0){
-
       # #<Time># <Name> <Symbol[<,>,#] optional> <Content>
       if($line.SubString(0,1) -eq "#"){
-        $time = $line.SubString(2,4)
-        #[regex]$regex = ':'
-        #$regex.matches($a).count
+        $time = $line.SubString(1,5)
         $name = rm_to_space($line.Split(':',3)[1])
         if ($line.Split(':',3).length -gt 2){
           $content = $line.Split(':',3)[2]
@@ -54,16 +51,16 @@ while($null -ne ($line = $reader.ReadLine())) {
       # <Name>: #<Time># <Symbol[<,>,#] optional> <Content>
       if($line.SubString(0,1) -ne "#"){
         $name = rm_to_space($line.Split(':',2)[0])
+        $time = $line.Split('#',3)[1]
         if ($line.Split(':',3).length -gt 2){
           $content = $line.Split('#',3)[2]
         } else {
           $content = $name
           $name = "not found"
         }
-        $time = $line.Split('#',3)[1]
       }
 
-      # Some formatting stuff
+      # separate symbols
       # remove whitespaces at the beginning
       if ($content -ne $null){
         while($content.StartsWith(" ")){
@@ -76,11 +73,6 @@ while($null -ne ($line = $reader.ReadLine())) {
           $content = $content.TrimStart($symbol + " ")
         }else{
           $symbol = ""
-        }
-
-        # remove whitespaces at the beginning
-        while($content.StartsWith(" ")){
-          $content = $content.TrimStart(" ")
         }
       }
 
