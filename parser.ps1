@@ -79,7 +79,7 @@ while($null -ne ($line = $reader.ReadLine())) {
       # save row data into an object
       $newrow = New-Object PSObject -Property @{
         Nr = $line_nr
-        Zeit = $time
+        Zeit = ' ' + $time
         Name = $name
         Symbol = $symbol
         Inhalt = $content
